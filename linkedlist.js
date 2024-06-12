@@ -1,59 +1,161 @@
+const Node = require("./Node");
+
 class LinkedList {
   constructor() {
     this.head = null;
     this.tail = null;
-    this.size = 0;
   }
 
   append(value) {
-    node = new Node();
+    const node = new Node();
     node.value = value;
-    tail = node;
+
+    if (this.isEmpty()) {
+      this.setFirstNode(node);
+    } else {
+      this.tail.next = node;
+      this.tail = node;
+    }
   }
 
   prepend(value) {
-    node = new Node();
+    const node = new Node();
     node.value = value;
-    head = node;
+
+    if (this.isEmpty()) {
+      this.setFirstNode(node);
+    } else {
+      node.next = this.head;
+      this.head = node;
+    }
   }
 
-  size() {
+  setFirstNode(node) {
+    this.head = node;
+    this.tail = node;
+  }
+
+  isEmpty() {
+    if (this.head === null && this.tail === null) {
+      return true;
+    }
+    return false;
+  }
+
+  getSize() {
     let size = 0;
-    while (head != null) {
-      count++;
-      head = this.head.head;
+    let current = this.head;
+    while (current != null) {
+      size++;
+      current = current.next;
     }
     return size;
   }
 
-  head() {
+  getHead() {
     return this.head;
   }
-  tail() {
+  getTail() {
     return this.tail;
   }
 
   at(index) {
-    if (head != null && index === 0) return this.head;
-    let count = 0;
-    while (head != null && index <= count) {
-      head = this.head.head;
+    let current = this.head;
+    if (current !== null && index === 0) return current;
+    let count = 1;
+
+    while (current !== null && count <= index) {
+      current = current.next;
       count++;
     }
-    return this.head;
+    return current;
   }
 
   pop() {
-    while (head != null) {
-      count++;
-      head = this.head.head;
+    let current = this.head;
+    if (current === null) throw Error("List is empty!");
+    if (current.next === null) this.head = null;
+    else {
+      while (current.next.next !== null) {
+        current = current.next;
+      }
+      current.next = null;
+      this.tail = current;
     }
-    return size;
+    while (current.next !== null) {
+      current = current.next;
+    }
+    current.next = null;
+    this.tail = current;
   }
 
-  contains(value) {}
+  contains(value) {
+    let current = this.head;
+    if (current === null) return false;
 
-  find(value) {}
+    while (current !== null) {
+      if (current.value === value) return true;
+      current = current.next;
+    }
+    return false;
+  }
 
-  toString() {}
+  find(value) {
+    let current = this.head;
+    if (current === null) return null;
+    let index = 0;
+
+    while (current !== null) {
+      if (current.value === value) return index;
+      current = current.next;
+      index++;
+    }
+    return null;
+  }
+
+  insertAt(value, index) {
+    const size = this.getSize();
+    if (index > size) {
+      throw new Error("Index exceeds the size of the list.");
+    }
+
+    let node = new Node();
+    node.value = value;
+
+    let nextNode = this.at(index + 1);
+    node.next = nextNode;
+    if (index === 0) {
+      this.head = node;
+    } else {
+      let previousNode = this.at(index - 1);
+      previousNode.next = node;
+    }
+  }
+
+  removeAt(index) {
+    if (index >= this.getSize()) {
+      throw new Error("Index exceeds the size of the list.");
+    }
+
+    let nextNode = this.at(index + 1);
+    if (index === 0) {
+      this.head = nextNode;
+    } else {
+      let previousNode = this.at(index - 1);
+      previousNode.next = nextNode;
+      if (nextNode === null) {
+        this.tail = previousNode;
+      }
+    }
+  }
+
+  toString() {
+    let toString = "";
+    let current = this.head;
+    while (current != null) {
+      toString = toString + `( ${current.value} ) -> `;
+      current = current.next;
+    }
+    return toString === "" ? "Empty List" : toString + `null`;
+  }
 }
